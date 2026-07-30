@@ -353,12 +353,12 @@ playBtn.addEventListener('click', () => {
 
 pauseBtn.addEventListener('click', () => {
   speechSynthesis.pause();
+  isPaused = true;
 });
 
 resumeBtn.addEventListener('click', () => {
   if (isPaused) {
-    isPaused = false;
-    speakChunks(currentChunks, currentChunkIndex);
+    speechSynthesis.resume();
   }
 });
 
