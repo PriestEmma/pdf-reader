@@ -300,16 +300,49 @@ loadVoices();
 
 speechSynthesis.onvoiceschanged = loadVoices;
 
+function chunkText(text, maxLength = 200) {
+  const sentences = text.match(/[^.!?]+[.!?]+|\s*$/g) || [text];
+  const chunks = [];
+  let current = '';
+
+  sentences.forEach((sentence) => {
+    if ((current + sentence).length > maxLength && current) {
+      chunks.push(current.trim());
+      current = sentence;
+    } else {
+      current += sentence;
+    }
+  });
+
+  if (current.trim()) chunks.push(current.trim());
+  return chunks;
+}
+
+function speakChunks(chunks, index = 0) {
+  if (index >= chunks.length) return;
+
+  const chunk = new SpeechSynthesisUtterance(chunks[index]);
+
+  const selectedVoice = voices.find(
+    (voice) => voice.name === voiceSelect.value,
+  );
+  if (selectedVoice) chunk.voice = selectedVoice;
+  chunk.pitch = Number(pitch.value);
+
+  chunk.onend = () => speakChunks(chunks, index + 1);
+  chunk.onerror = (e) => console.log('Speech ERROR:', e.error);
+
+  speechSynthesis.speak(chunk);
+}
+
 playBtn.addEventListener('click', () => {
   if (!currentChapterText) {
     alert('Please select a chapter first.');
     return;
   }
 
-  alert('Available voices:', speechSynthesis.getVoices().length);
-  alert('Selected voice value:', voiceSelect.value);
-
   speechSynthesis.cancel();
+  speakChunks(chunkText(currentChapterText));
 
   utterance = new SpeechSynthesisUtterance(currentChapterText);
 
@@ -317,21 +350,13 @@ playBtn.addEventListener('click', () => {
     (voice) => voice.name === voiceSelect.value,
   );
 
-  alert('Matched voice:', selectedVoice);
-
   if (selectedVoice) {
     utterance.voice = selectedVoice;
   }
 
   utterance.pitch = Number(pitch.value);
 
-  utterance.onstart = () => alert('Speech STARTED');
-  utterance.onerror = (e) => alert('Speech ERROR:', e.error);
-  utterance.onend = () => alert('Speech ENDED');
-
   speechSynthesis.speak(utterance);
-
-  alert('speak() called, speaking now?', speechSynthesis.speaking);
 });
 
 pauseBtn.addEventListener('click', () => {
