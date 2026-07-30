@@ -31,6 +31,8 @@ document.querySelector('#theme-toggle').addEventListener('click', () => {
 
 let currentChapterText = '';
 let utterance = null;
+let currentPosition = 0;
+let selectedVoice = null;
 // To get voices
 let voices = [];
 // current section
@@ -324,21 +326,33 @@ function chunkText(text, maxLength = 200) {
 function speakChunks(chunks, index = 0) {
   currentChunks = chunks;
   currentChunkIndex = index;
+  isPaused = false;
 
   if (index >= chunks.length) return;
 
-  const chunk = new SpeechSynthesisUtterance(chunks[index]);
+  utterance = new SpeechSynthesisUtterance(chunks[index]);
 
   const selectedVoice = voices.find(
     (voice) => voice.name === voiceSelect.value,
   );
-  if (selectedVoice) chunk.voice = selectedVoice;
-  chunk.pitch = Number(pitch.value);
 
-  chunk.onend = () => speakChunks(chunks, index + 1);
-  chunk.onerror = (e) => console.log('Speech ERROR:', e.error);
+  if (selectedVoice) {
+    utterance.voice = selectedVoice;
+  }
 
-  speechSynthesis.speak(chunk);
+  utterance.pitch = Number(pitch.value);
+
+  utterance.onend = () => {
+    if (!isPaused) {
+      speakChunks(chunks, index + 1);
+    }
+  };
+
+  utterance.onerror = (e) => {
+    console.log(e.error);
+  };
+
+  speechSynthesis.speak(utterance);
 }
 
 playBtn.addEventListener('click', () => {
@@ -352,13 +366,13 @@ playBtn.addEventListener('click', () => {
 });
 
 pauseBtn.addEventListener('click', () => {
-  speechSynthesis.pause();
   isPaused = true;
+  speechSynthesis.cancel();
 });
 
 resumeBtn.addEventListener('click', () => {
-  if (speechSynthesis.paused) {
-    speechSynthesis.resume();
+  if (isPaused) {
+    speakChunks(currentChunks, currentChunkIndex);
   }
 });
 
