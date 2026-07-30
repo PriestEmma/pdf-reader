@@ -39,6 +39,9 @@ let navigationStack = [];
 let currentPdf = null;
 let currentOutline = [];
 let currentMenu = 'sections';
+let isPaused = false;
+let currentChunks = [];
+let currentChunkIndex = 0;
 
 async function getText(e) {
   try {
@@ -319,6 +322,9 @@ function chunkText(text, maxLength = 200) {
 }
 
 function speakChunks(chunks, index = 0) {
+  currentChunks = chunks;
+  currentChunkIndex = index;
+
   if (index >= chunks.length) return;
 
   const chunk = new SpeechSynthesisUtterance(chunks[index]);
@@ -350,7 +356,10 @@ pauseBtn.addEventListener('click', () => {
 });
 
 resumeBtn.addEventListener('click', () => {
-  speechSynthesis.resume();
+  if (isPaused) {
+    isPaused = false;
+    speakChunks(currentChunks, currentChunkIndex);
+  }
 });
 
 stopBtn.addEventListener('click', () => {
