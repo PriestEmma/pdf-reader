@@ -357,7 +357,7 @@ pauseBtn.addEventListener('click', () => {
 });
 
 resumeBtn.addEventListener('click', () => {
-  if (isPaused) {
+  if (speechSynthesis.paused) {
     speechSynthesis.resume();
   }
 });
