@@ -343,20 +343,6 @@ playBtn.addEventListener('click', () => {
 
   speechSynthesis.cancel();
   speakChunks(chunkText(currentChapterText));
-
-  utterance = new SpeechSynthesisUtterance(currentChapterText);
-
-  const selectedVoice = voices.find(
-    (voice) => voice.name === voiceSelect.value,
-  );
-
-  if (selectedVoice) {
-    utterance.voice = selectedVoice;
-  }
-
-  utterance.pitch = Number(pitch.value);
-
-  speechSynthesis.speak(utterance);
 });
 
 pauseBtn.addEventListener('click', () => {
