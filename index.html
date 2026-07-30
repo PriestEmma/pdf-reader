@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>PDF Speech reader</title>
+  </head>
+  <body>
+    <header>
+      <h1>PDF Speech Reader</h1>
+      <p>Upload a PDF and listen to it.</p>
+    </header>
+
+    <main>
+      <button id="theme-toggle" aria-label="Toggle theme">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+
+      <section class="file-section">
+        <h2>Choose a PDF</h2>
+
+        <div class="flex">
+          <label class="upload-btn">
+            +
+            <input type="file" id="pdf-file" accept=".pdf" />
+          </label>
+
+          <div class="pdf-card">
+            <span class="pdf-name"></span>
+
+            <button class="remove-pdf">×</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="reader-section">
+        <h2>PDF Text</h2>
+
+        <div id="pdf-text"></div>
+      </section>
+
+      <section class="chapters-section">
+        <button id="open-chapters">Chapters</button>
+
+        <div id="chapter-overlay">
+          <div class="overlay-header">
+            <button id="back-btn">←</button>
+
+            <div class="overlay-title-container">
+              <h2 id="overlay-title">Contents</h2>
+
+              <p id="overlay-subtitle"></p>
+            </div>
+
+            <button id="close-chapters">✕</button>
+          </div>
+
+          <div id="overlay-content"></div>
+        </div>
+      </section>
+
+      <section class="controls">
+        <div class="control-container">
+          <button id="read-btn">
+            <i class="fa-solid fa-play"></i>
+          </button>
+          <button id="pause-btn">
+            <i class="fa-solid fa-pause"></i>
+          </button>
+          <button id="resume-btn">
+            <i class="fa-solid fa-forward-step"></i>
+          </button>
+          <button id="stop-btn">
+            <i class="fa-solid fa-stop"></i>
+          </button>
+        </div>
+
+        <label for="voice-select" id="voice">Voice</label>
+
+        <div class="voice-wrapper">
+          <i class="fa-solid fa-volume-high"></i>
+
+          <select id="voice-select"></select>
+        </div>
+        <label for="pitch-control">Pitch</label>
+
+        <div class="pitch-control">
+          <button id="decrease">◀</button>
+
+          <input
+            id="pitch"
+            type="number"
+            min="0"
+            max="2"
+            step="0.25"
+            value="1"
+          />
+
+          <button id="increase">▶</button>
+        </div>
+      </section>
+    </main>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.54/pdf.min.mjs"
+      type="module"
+    ></script>
+    <script src="script.js" type="module"></script>
+  </body>
+</html>
