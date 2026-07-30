@@ -128,8 +128,8 @@ section h2 {
 
 /* Upload button */
 .upload-btn {
-  width: 50px;
-  height: 50px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
 
   display: flex;
@@ -188,6 +188,8 @@ button:hover {
 
 .pdf-card {
   display: none;
+  max-width: 85%;
+  height: 37px;
 }
 
 /* PDF name card */
@@ -211,11 +213,11 @@ button:hover {
 }
 
 .pdf-name {
-  /* overflow: hidden; */
-  /* text-overflow: ellipsis; */
+  overflow: hidden;
+  text-align: justify;
+  text-overflow: ellipsis;
   white-space: nowrap;
-
-  max-width: 80%;
+  font-size: clamp(0.5rem, 0.8vw + 0.5rem, 3rem);
 }
 
 .remove-pdf {
@@ -240,6 +242,7 @@ button:hover {
   justify-content: center;
   align-items: center;
   gap: 10px;
+  max-width: 100%;
 }
 
 /* Chapter */
@@ -476,4 +479,8 @@ input#pitch-control {
 [data-theme='dark'] #theme-toggle {
   background: #333;
   color: #f0f0f0;
+}
+
+.file-section {
+  width: 100%;
 }

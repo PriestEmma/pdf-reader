@@ -306,6 +306,9 @@ playBtn.addEventListener('click', () => {
     return;
   }
 
+  aler('Available voices:', speechSynthesis.getVoices().length);
+  aler('Selected voice value:', voiceSelect.value);
+
   speechSynthesis.cancel();
 
   utterance = new SpeechSynthesisUtterance(currentChapterText);
@@ -314,13 +317,21 @@ playBtn.addEventListener('click', () => {
     (voice) => voice.name === voiceSelect.value,
   );
 
+  aler('Matched voice:', selectedVoice);
+
   if (selectedVoice) {
     utterance.voice = selectedVoice;
   }
 
   utterance.pitch = Number(pitch.value);
 
+  utterance.onstart = () => aler('Speech STARTED');
+  utterance.onerror = (e) => aler('Speech ERROR:', e.error);
+  utterance.onend = () => aler('Speech ENDED');
+
   speechSynthesis.speak(utterance);
+
+  aler('speak() called, speaking now?', speechSynthesis.speaking);
 });
 
 pauseBtn.addEventListener('click', () => {
