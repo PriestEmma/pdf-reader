@@ -306,8 +306,8 @@ playBtn.addEventListener('click', () => {
     return;
   }
 
-  aler('Available voices:', speechSynthesis.getVoices().length);
-  aler('Selected voice value:', voiceSelect.value);
+  alert('Available voices:', speechSynthesis.getVoices().length);
+  alert('Selected voice value:', voiceSelect.value);
 
   speechSynthesis.cancel();
 
@@ -317,7 +317,7 @@ playBtn.addEventListener('click', () => {
     (voice) => voice.name === voiceSelect.value,
   );
 
-  aler('Matched voice:', selectedVoice);
+  alert('Matched voice:', selectedVoice);
 
   if (selectedVoice) {
     utterance.voice = selectedVoice;
@@ -325,13 +325,13 @@ playBtn.addEventListener('click', () => {
 
   utterance.pitch = Number(pitch.value);
 
-  utterance.onstart = () => aler('Speech STARTED');
-  utterance.onerror = (e) => aler('Speech ERROR:', e.error);
-  utterance.onend = () => aler('Speech ENDED');
+  utterance.onstart = () => alert('Speech STARTED');
+  utterance.onerror = (e) => alert('Speech ERROR:', e.error);
+  utterance.onend = () => alert('Speech ENDED');
 
   speechSynthesis.speak(utterance);
 
-  aler('speak() called, speaking now?', speechSynthesis.speaking);
+  alert('speak() called, speaking now?', speechSynthesis.speaking);
 });
 
 pauseBtn.addEventListener('click', () => {
