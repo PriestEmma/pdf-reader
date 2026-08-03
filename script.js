@@ -512,9 +512,3 @@ decrease.addEventListener('click', () => {
   pitch.stepDown();
   pitch.dispatchEvent(new Event('change'));
 });
-
-document.querySelectorAll('button').forEach((button) => {
-  button.addEventListener('click', () => {
-    button.blur();
-  });
-});
