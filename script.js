@@ -312,7 +312,7 @@ function loadVoices() {
 
   const englishVoices = voices.filter((voice) => voice.lang.startsWith('en'));
 
-  englishVoices.forEach((voice) => {
+  voices.forEach((voice) => {
     const option = document.createElement('option');
 
     option.value = voice.name;
