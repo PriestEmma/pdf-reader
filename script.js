@@ -316,10 +316,10 @@ function loadVoices() {
     const option = document.createElement('option');
 
     option.value = voice.name;
-    option.textContent = `${voice.name} (${voice.lang})`;
+    option.textContent = `${voice.name} `;
 
     if (voice.default) {
-      option.textContent += ' (Default)';
+      option.innerHTML += ' <strong>       (-DEFAULT)</strong>';
     }
 
     voiceSelect.appendChild(option);
