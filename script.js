@@ -4,22 +4,34 @@ import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.54/
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.54/pdf.worker.min.mjs';
 
-const displayText = document.querySelector('#pdf-text');
-const overlayContent = document.querySelector('#overlay-content');
-const voiceSelect = document.querySelector('#voice-select');
-
+// Flex PDF
 const pdfName = document.querySelector('.pdf-name');
 const pdfCard = document.querySelector('.pdf-card');
 const removePdf = document.querySelector('.remove-pdf');
-const openChapters = document.querySelector('#open-chapters');
-const closeChapters = document.querySelector('#close-chapters');
+
+// PDF text section
+const displayText = document.querySelector('#pdf-text');
+
+// Chapters section
 const chapterOverlay = document.querySelector('#chapter-overlay');
 const backBtn = document.querySelector('#back-btn');
 const overlayTitle = document.querySelector('#overlay-title');
+const closeChapters = document.querySelector('#close-chapters');
+const overlayContent = document.querySelector('#overlay-content');
+const openChapters = document.querySelector('#open-chapters');
+
+// Control Section
+const voiceSelect = document.querySelector('#voice-select');
+
+// Pitch Control
 const pitch = document.querySelector('#pitch');
 const decrease = document.querySelector('#decrease');
 const increase = document.querySelector('#increase');
 
+// Speaking
+let isSpeaking = false;
+
+// Background Theme Toggle
 document.querySelector('#theme-toggle').addEventListener('click', () => {
   const html = document.querySelector('html');
   if (html.dataset.theme != 'dark') {
@@ -260,7 +272,19 @@ function showReadMenu(sections) {
     button.addEventListener('click', () => {
       currentChapterText = section.text;
 
-      displayText.textContent = section.text;
+      displayText.innerHTML = '';
+
+      const paragraphs = section.text
+        .split('\n')
+        .filter((paragraph) => paragraph.trim() !== '');
+
+      paragraphs.forEach((paragraph) => {
+        const p = document.createElement('p');
+        p.textContent = paragraph;
+        p.classList.add('speech-paragraph');
+
+        displayText.appendChild(p);
+      });
 
       displayText.scrollTop = 0;
 
@@ -305,22 +329,62 @@ loadVoices();
 
 speechSynthesis.onvoiceschanged = loadVoices;
 
-function chunkText(text, maxLength = 200) {
-  const sentences = text.match(/[^.!?]+[.!?]+|\s*$/g) || [text];
-  const chunks = [];
-  let current = '';
+function chunkText() {
+  const paragraphs = document.querySelectorAll('.speech-paragraph');
 
-  sentences.forEach((sentence) => {
-    if ((current + sentence).length > maxLength && current) {
-      chunks.push(current.trim());
-      current = sentence;
-    } else {
-      current += sentence;
+  const chunks = [];
+
+  paragraphs.forEach((paragraph, paragraphIndex) => {
+    const sentences = paragraph.textContent.match(/[^.!?]+[.!?]+|\s*$/g) || [
+      paragraph.textContent,
+    ];
+
+    let current = '';
+
+    sentences.forEach((sentence) => {
+      if ((current + sentence).length > 200 && current) {
+        chunks.push({
+          text: current.trim(),
+          paragraph: paragraphIndex,
+        });
+
+        current = sentence;
+      } else {
+        current += sentence;
+      }
+    });
+
+    if (current.trim()) {
+      chunks.push({
+        text: current.trim(),
+        paragraph: paragraphIndex,
+      });
     }
   });
 
-  if (current.trim()) chunks.push(current.trim());
   return chunks;
+}
+
+function highlightParagraph(index) {
+  const paragraphs = document.querySelectorAll('.speech-paragraph');
+
+  // Remove the previous highlight
+  paragraphs.forEach((paragraph) => {
+    paragraph.classList.remove('active');
+  });
+
+  // Highlight the current paragraph
+  if (paragraphs[index]) {
+    paragraphs[index].classList.add('active');
+
+    const paragraph = paragraphs[index];
+
+    paragraph.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'nearest',
+    });
+  }
 }
 
 function speakChunks(chunks, index = 0) {
@@ -330,7 +394,9 @@ function speakChunks(chunks, index = 0) {
 
   if (index >= chunks.length) return;
 
-  utterance = new SpeechSynthesisUtterance(chunks[index]);
+  highlightParagraph(chunks[index].paragraph);
+
+  utterance = new SpeechSynthesisUtterance(chunks[index].text);
 
   const selectedVoice = voices.find(
     (voice) => voice.name === voiceSelect.value,
@@ -344,7 +410,12 @@ function speakChunks(chunks, index = 0) {
 
   utterance.onend = () => {
     if (!isPaused) {
-      speakChunks(chunks, index + 1);
+      if (index + 1 < chunks.length) {
+        speakChunks(chunks, index + 1);
+      } else {
+        isSpeaking = false;
+        playBtn.disabled = false;
+      }
     }
   };
 
@@ -352,17 +423,22 @@ function speakChunks(chunks, index = 0) {
     console.log(e.error);
   };
 
+  isSpeaking = true;
+  playBtn.disabled = true;
+
   speechSynthesis.speak(utterance);
 }
 
 playBtn.addEventListener('click', () => {
+  if (isSpeaking) return;
+
   if (!currentChapterText) {
     alert('Please select a chapter first.');
     return;
   }
 
   speechSynthesis.cancel();
-  speakChunks(chunkText(currentChapterText));
+  speakChunks(chunkText());
 });
 
 pauseBtn.addEventListener('click', () => {
@@ -379,12 +455,19 @@ resumeBtn.addEventListener('click', () => {
 stopBtn.addEventListener('click', () => {
   speechSynthesis.cancel();
   utterance = null;
+
+  isSpeaking = false;
+  playBtn.disabled = false;
 });
 
 removePdf.addEventListener('click', () => {
   // Remove PDF card
   pdfCard.style.display = 'none';
   pdfName.textContent = '';
+
+  // Reset
+  isSpeaking = false;
+  playBtn.disabled = false;
 
   // Clear chapters
 

@@ -106,6 +106,7 @@ section h2 {
 
 #pdf-text {
   height: 400px;
+  scroll-behavior: smooth;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 18px;
@@ -180,6 +181,11 @@ button:hover {
   background: var(--primary-color);
   color: white;
   border-color: var(--primary-color);
+}
+
+#read-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 #read-btn:hover {
@@ -483,4 +489,15 @@ input#pitch-control {
 
 .file-section {
   width: 100%;
+}
+
+/* Speech  */
+.speech-paragraph {
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.speech-paragraph.active {
+  background: rgba(217, 119, 87, 0.18);
+  border-left: 4px solid var(--primary-color);
 }
