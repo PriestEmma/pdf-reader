@@ -173,9 +173,9 @@ button {
   transition: 0.2s ease;
 }
 
-button:hover {
+/* button:hover {
   background: var(--button-hover);
-}
+} */
 
 #read-btn {
   background: var(--primary-color);
@@ -502,10 +502,14 @@ input#pitch-control {
   border-left: 4px solid var(--primary-color);
 }
 
-button:focus {
-  outline: none;
+/* Desktop only */
+@media (hover: hover) {
+  button:hover {
+    background: var(--button-hover);
+  }
 }
 
-button:focus-visible {
-  outline: 2px solid var(--primary-color);
+/* Mobile only */
+button:active {
+  background: var(--button-hover);
 }
